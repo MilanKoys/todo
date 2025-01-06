@@ -4,42 +4,39 @@ const todoEmptyElement = document.querySelector("#todo-empty");
 const todoItemTemplate = document.querySelector("#todo-item");
 const todoNewItemTemplate = document.querySelector("#todo-new-item");
 const todoSettingsElement = document.querySelector("#todo-settings");
-const todoSettingsActionElement = document.querySelector(
-  "#todo-settings-action"
-);
+const todoSettingsAction = document.querySelector("#todo-settings-action");
 const todoHideCompleteAction = document.querySelector("#hide-complete-action");
 
-todoHideCompleteAction.addEventListener("click", () => {
-  if (todoHideCompleteAction.textContent === "circle") {
-    todoHideCompleteAction.textContent = "check_circle";
-    showComplete = true;
-  } else {
-    todoHideCompleteAction.textContent = "circle";
-    showComplete = false;
-  }
-
-  renderTodos(todos);
-});
-
-todoSettingsActionElement.addEventListener("click", () => toggleSettings());
-todoSettingsActionElement.addEventListener("keydown", (event) => {
-  if (event.key === "enter") toggleSettings();
-});
-
 todoNewElement.addEventListener("click", () => newTodo());
-todoNewElement.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") newTodo();
-});
-
-todoContainerElement.addEventListener("dragover", (event) => {
-  event.preventDefault();
-});
+todoHideCompleteAction.addEventListener("click", () => toggleShowComplete());
+todoSettingsAction.addEventListener("click", () => toggleSettings());
+todoSettingsAction.addEventListener("keydown", (event) =>
+  enterTrigger(event, toggleSettings)
+);
+todoNewElement.addEventListener("keydown", (event) =>
+  enterTrigger(event, newTodo())
+);
+todoContainerElement.addEventListener("dragover", (event) =>
+  event.preventDefault()
+);
 
 let todos = loadTodos() ?? [];
 let creating = false;
 let dragSource = null;
 let showComplete = true;
 renderTodos(todos);
+
+function toggleShowComplete() {
+  const toggled = todoHideCompleteAction.textContent === "circle";
+  const icon = toggled ? "check_circle" : "circle";
+  todoHideCompleteAction.textContent = icon;
+  showComplete = toggled;
+  renderTodos(todos);
+}
+
+function enterTrigger(event, callback) {
+  if (event.key === "Enter" && callback) callback();
+}
 
 function toggleSettings() {
   if (todoSettingsElement.classList.contains("hidden")) {
@@ -242,9 +239,17 @@ function swapTodos(todo1, todo2) {
     );
   }
 
-  const storedTodo = todos[index1 - 1];
-  todos[index1 - 1] = todos[index2 - 1];
-  todos[index2 - 1] = storedTodo;
+  const ti1 = todos.findIndex(
+    (t) => t.text === todo1.querySelector("#text").textContent
+  );
+
+  const ti2 = todos.findIndex(
+    (t) => t.text === todo2.querySelector("#text").textContent
+  );
+
+  const storedTodo = todos[ti1];
+  todos[ti1] = todos[ti2];
+  todos[ti2] = storedTodo;
   saveTodos();
 
   todoContainerElement.insertBefore(
