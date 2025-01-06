@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_circle,cancel,check,check_circle,circle,delete"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_circle,cancel,check,check_circle,circle,delete,edit,settings"
     />
     <link rel="stylesheet" href="style.css" />
     <script src="app.js" type="module" defer></script>
@@ -21,18 +21,35 @@
         >
           <div class="flex justify-between items-center">
             <p class="text-xl font-semibold">Todo</p>
-            <span
-              tabindex="0"
-              id="todo-new"
-              class="material-symbols-rounded text-3xl opacity-50 hover:opacity-100 transition-opacity cursor-pointer focus:opacity-100 outline-none"
-            >
-              add_circle
-            </span>
-          </div>
-          <div id="todo-container" class="mt-3 flex flex-col gap-1">
-            <div id="todo-empty" class="flex justify-center items-center">
-              <p class="p-2">Nothings to do...</p>
+            <div class="flex gap-1">
+              <span
+                id="todo-settings-action"
+                class="material-symbols-rounded text-3xl opacity-50 hover:opacity-100 transition-opacity cursor-pointer focus:opacity-100 outline-none"
+                class="material-symbols-rounded"
+                >settings</span
+              >
+              <span
+                tabindex="0"
+                id="todo-new"
+                class="material-symbols-rounded text-3xl opacity-50 hover:opacity-100 transition-opacity cursor-pointer focus:opacity-100 outline-none"
+              >
+                add_circle
+              </span>
             </div>
+          </div>
+          <div id="todo-settings" class="hidden">
+            <div class="px-2.5 py-2 flex">
+              <span
+                id="hide-complete-action"
+                class="material-symbols-rounded me-2 opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
+                >check_circle</span
+              >
+              <p class="font-semibold">Show completed</p>
+            </div>
+          </div>
+          <div id="todo-container" class="mt-3 flex flex-col gap-1"></div>
+          <div id="todo-empty" class="flex justify-center items-center">
+            <p class="p-2">Nothings to do...</p>
           </div>
         </div>
       </div>
@@ -55,9 +72,20 @@
         >
           Do something...
         </p>
+        <input
+          id="text-input"
+          placeholder="Title"
+          type="text"
+          class="bg-transparent outline-none font-semibold w-full text-sm hidden"
+        />
         <div
           class="group-hover:opacity-100 opacity-0 transition-opacity flex justify-center items-center"
         >
+          <span
+            id="edit-action"
+            class="material-symbols-rounded opacity-50 hover:opacity-100 transition-all cursor-pointer"
+            >edit</span
+          >
           <span
             id="remove-action"
             class="material-symbols-rounded hover:text-red-500 opacity-50 hover:opacity-100 transition-all cursor-pointer"
@@ -85,5 +113,7 @@
         />
       </div>
     </template>
+
+    <template id="todo-settings"> </template>
   </body>
 </html>

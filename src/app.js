@@ -3,6 +3,28 @@ const todoNewElement = document.querySelector("#todo-new");
 const todoEmptyElement = document.querySelector("#todo-empty");
 const todoItemTemplate = document.querySelector("#todo-item");
 const todoNewItemTemplate = document.querySelector("#todo-new-item");
+const todoSettingsElement = document.querySelector("#todo-settings");
+const todoSettingsActionElement = document.querySelector(
+  "#todo-settings-action"
+);
+const todoHideCompleteAction = document.querySelector("#hide-complete-action");
+
+todoHideCompleteAction.addEventListener("click", () => {
+  if (todoHideCompleteAction.textContent === "circle") {
+    todoHideCompleteAction.textContent = "check_circle";
+    showComplete = true;
+  } else {
+    todoHideCompleteAction.textContent = "circle";
+    showComplete = false;
+  }
+
+  renderTodos(todos);
+});
+
+todoSettingsActionElement.addEventListener("click", () => toggleSettings());
+todoSettingsActionElement.addEventListener("keydown", (event) => {
+  if (event.key === "enter") toggleSettings();
+});
 
 todoNewElement.addEventListener("click", () => newTodo());
 todoNewElement.addEventListener("keydown", (event) => {
@@ -16,7 +38,18 @@ todoContainerElement.addEventListener("dragover", (event) => {
 let todos = loadTodos() ?? [];
 let creating = false;
 let dragSource = null;
-if (todos) todos.forEach((todo) => addTodo(todo.text, todo.complete));
+let showComplete = true;
+renderTodos(todos);
+
+function toggleSettings() {
+  if (todoSettingsElement.classList.contains("hidden")) {
+    todoContainerElement.classList.add("hidden");
+    todoSettingsElement.classList.remove("hidden");
+  } else {
+    todoContainerElement.classList.remove("hidden");
+    todoSettingsElement.classList.add("hidden");
+  }
+}
 
 function checkEmptyMessage(flag) {
   if (flag || todos.length) {
@@ -63,14 +96,49 @@ function newTodo() {
   }
 }
 
+function renderTodos(todos) {
+  todoContainerElement.innerHTML = "";
+  if (todos) todos.forEach((todo) => addTodo(todo.text, todo.complete));
+}
+
 function addTodo(todo, complete) {
+  if (!showComplete && complete) return;
   checkEmptyMessage();
   const todoItemElement = cloneTemplateShell(todoItemTemplate);
   const itemTextElement = todoItemElement.querySelector("#text");
+  const itemTextInputElement = todoItemElement.querySelector("#text-input");
   const itemCompleteActionElement =
     todoItemElement.querySelector("#complete-action");
   const itemRemoveActionElement =
     todoItemElement.querySelector("#remove-action");
+  const itemEditActionElement = todoItemElement.querySelector("#edit-action");
+
+  itemTextInputElement.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") saveEdit();
+  });
+
+  itemEditActionElement.addEventListener("click", () => {
+    if (itemEditActionElement.textContent === "check") {
+      saveEdit();
+    } else {
+      itemTextInputElement.value = itemTextElement.textContent;
+      itemTextInputElement.classList.remove("hidden");
+      itemTextElement.classList.add("hidden");
+      itemTextInputElement.focus();
+      itemEditActionElement.textContent = "check";
+    }
+  });
+
+  function saveEdit() {
+    const index = todos.findIndex((t) => t.text === todo);
+    if (index > -1) todos[index].text = itemTextInputElement.value;
+    itemTextInputElement.value;
+    itemTextElement.textContent = itemTextInputElement.value;
+    itemTextInputElement.classList.add("hidden");
+    itemTextElement.classList.remove("hidden");
+    itemEditActionElement.textContent = "edit";
+    saveTodos();
+  }
 
   itemRemoveActionElement.addEventListener("click", () => {
     todos.splice(
@@ -83,6 +151,7 @@ function addTodo(todo, complete) {
   });
 
   todoItemElement.addEventListener("keydown", (event) => {
+    if (event.target.id === "text-input") return;
     if (event.key === "Enter") toggleCompletion();
   });
   itemCompleteActionElement.addEventListener("click", () => toggleCompletion());
@@ -104,6 +173,7 @@ function addTodo(todo, complete) {
       itemTextElement.classList.add("line-through");
       itemTextElement.classList.add("opacity-50");
       todos[todos.findIndex((t) => t.text === todo)].complete = true;
+      if (!showComplete) todoContainerElement.removeChild(todoItemElement);
     } else {
       itemCompleteActionElement.textContent = "circle";
       itemTextElement.classList.remove("line-through");
@@ -154,8 +224,8 @@ function swapTodos(todo1, todo2) {
   if (i1 > i2) {
     index2 = i1;
     index1 = i2;
-    target = todo1;
     source = todo2;
+    target = todo1;
   } else {
     index2 = i2;
     index1 = i1;
