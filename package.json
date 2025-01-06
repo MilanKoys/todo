@@ -1,0 +1,16 @@
+{
+  "name": "todo",
+  "version": "1.0.0",
+  "description": "Todo list",
+  "license": "MIT",
+  "author": "Milan Koyš",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "start": "vite ./src & tailwindcss -i ./src/input.css -o ./src/style.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17",
+    "vite": "^6.0.7"
+  }
+}
